@@ -1,0 +1,38 @@
+[package]
+name = "miniball"
+description = "Minimum enclosing ball"
+authors = ["Rouven Spreckels <rs@qu1x.dev>"]
+version = "0.1.0"
+edition = "2021"
+documentation = "https://docs.rs/miniball"
+repository = "https://github.com/qu1x/miniball"
+readme = "README.md"
+license = "MPL-2.0"
+keywords = [
+	"MEB",
+	"SEB",
+	"circumscribed-sphere",
+	"smallest-enclosing-ball",
+	"welzl-algorithm",
+]
+categories = [
+	"science",
+	"graphics",
+	"algorithms",
+	"mathematics",
+]
+include = [
+	"src/**/*.rs",
+	"Cargo.toml",
+	"README.md",
+	"RELEASES.md",
+	"LICENSES/*",
+]
+
+[dependencies]
+arrayvec = "0.7.2"
+nalgebra = { version = "0.31.0", features = ["rand"] }
+stacker = "0.1.14"
+
+[profile.test]
+opt-level = 2
