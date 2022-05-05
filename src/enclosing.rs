@@ -141,7 +141,7 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 		bounds: &mut ArrayVec<Point<R, D>, { D + 1 }>,
 	) -> Option<Self> {
 		// Take point from back.
-		if bounds.len() < bounds.capacity() && let Some(point) = points.pop_back() {
+		if let Some(point) = points.pop_back() && !bounds.is_full() {
 			let ball = maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
 				// Branch with one point less.
 				Self::enclosing_points_with_bounds(points, bounds)
