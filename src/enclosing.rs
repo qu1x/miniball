@@ -22,7 +22,7 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 	/// Whether ball contains `point`.
 	#[must_use]
 	fn contains(&self, point: &Point<R, D>) -> bool;
-	/// Returns circumscribed ball with `bounds` if it exists.
+	/// Returns circumscribed ball with all `bounds` on surface or `None` if it does not exist.
 	///
 	/// # Example
 	///
@@ -56,14 +56,15 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 
 	/// Returns minimum ball enclosing `points`.
 	///
-	/// Points should be randomly permuted beforehand to ensure expected time complexity. It accepts
-	/// a mutable deque to permute the points from inside to outside. This does not converge into a
-	/// final reproducible order but reusing points by adding new enclosed points to the front and
-	/// new points on the outside to the back will significantly speed up further invocations.
+	/// Points should be randomly permuted beforehand to ensure expected time complexity. Accepts
+	/// mutable reference to container implementing [`Deque`] to move potential points on surface to
+	/// the front. This does not converge towards a reproducible total order but significantly
+	/// speeds up further invocations if the use case involves adding new points, non-enclosed ones
+	/// to the front and enclosed ones to the back.
 	///
-	/// Implements [Welzl's recursive algorithm] with move-to-front heuristic. It is allocation-free
-	/// until stack size enters dimension-dependant red zone in which case temporary stack space
-	/// will be allocated. Allocations will also happen if real field `R` is not [`Copy`].
+	/// Implements [Welzl's recursive algorithm] with move-to-front heuristic. No allocations happen
+	/// unless real field `R` is not [`Copy`] or stack size enters dimension-dependant red zone in
+	/// which case temporary stack space will be allocated.
 	///
 	/// [Welzl's recursive algorithm]: https://api.semanticscholar.org/CorpusID:17569809
 	///
