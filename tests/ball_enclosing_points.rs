@@ -7,8 +7,80 @@
 #![allow(clippy::float_cmp)]
 
 use miniball::{Ball, Enclosing};
-use nalgebra::{distance, Point3, Point6, Vector3, Vector6};
+use nalgebra::{
+	distance, Point, Point1, Point2, Point3, Point6, Vector1, Vector2, Vector3, Vector6,
+};
 use std::collections::VecDeque;
+
+#[test]
+fn minimum_0_ball_enclosing_bounds() {
+	let a = Point::<f64, 0>::origin();
+	let Ball {
+		center,
+		radius_squared,
+	} = Ball::enclosing_points(&mut [a].into_iter().collect::<VecDeque<_>>());
+	assert_eq!(center, a);
+	assert_eq!(radius_squared, 0.0);
+}
+
+#[test]
+fn minimum_1_ball_enclosing_bounds() {
+	let offset = Vector1::new(7.0);
+	let a = Point1::new(1.0);
+	let b = Point1::new(-1.0);
+	let Ball {
+		center,
+		radius_squared,
+	} = Ball::enclosing_points(
+		&mut [a, b]
+			.map(|bound| bound * 3.0)
+			.map(|bound| bound + offset)
+			.into_iter()
+			.collect::<VecDeque<_>>(),
+	);
+	assert_eq!(center, offset.into());
+	assert_eq!(radius_squared, 9.0);
+}
+
+#[test]
+fn minimum_2_ball_enclosing_bounds() {
+	let offset = Vector2::new(-3.0, 7.0);
+	let a = Point2::new(-1.0, 0.0);
+	let b = Point2::new(1.0, 0.0);
+	let c = Point2::new(0.0, 1.0);
+	let Ball {
+		center,
+		radius_squared,
+	} = Ball::enclosing_points(
+		&mut [a, b, c]
+			.map(|bound| bound * 3.0)
+			.map(|bound| bound + offset)
+			.into_iter()
+			.collect::<VecDeque<_>>(),
+	);
+	assert_eq!(center, offset.into());
+	assert_eq!(radius_squared, 9.0);
+}
+
+#[test]
+fn minimum_3_ball_enclosing_bounds() {
+	let offset = Vector3::new(-3.0, 7.0, 4.8);
+	let a = Point3::new(1.0, 1.0, 1.0);
+	let b = Point3::new(1.0, -1.0, -1.0);
+	let c = Point3::new(-1.0, 1.0, -1.0);
+	let d = Point3::new(-1.0, -1.0, 1.0);
+	let Ball {
+		center,
+		radius_squared,
+	} = Ball::enclosing_points(
+		&mut [a, b, c, d]
+			.map(|bound| bound + offset)
+			.into_iter()
+			.collect::<VecDeque<_>>(),
+	);
+	assert_eq!(center, offset.into());
+	assert_eq!(radius_squared, 3.0);
+}
 
 #[test]
 fn minimum_3_ball_enclosing_3_line() {

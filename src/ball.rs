@@ -8,7 +8,7 @@ use super::Enclosing;
 use nalgebra::{distance_squared, Point, RealField, SMatrix, SVector};
 
 /// Ball over real field `R` of dimension `D` with center and radius squared.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ball<R: RealField, const D: usize> {
 	/// Ball's center.
 	pub center: Point<R, D>,
@@ -22,7 +22,9 @@ impl<R: RealField, const D: usize> Enclosing<R, D> for Ball<R, D> {
 		distance_squared(&self.center, point) <= self.radius_squared
 	}
 	fn with_bounds(bounds: &[Point<R, D>]) -> Option<Self> {
-		let length = (!bounds.is_empty()).then(|| bounds.len() - 1)?;
+		let length = (1..=D + 1)
+			.contains(&bounds.len())
+			.then(|| bounds.len() - 1)?;
 		let points = SMatrix::<R, D, D>::from_fn(|row, column| {
 			if column < length {
 				bounds[column + 1].coords[row].clone() - bounds[0].coords[row].clone()
