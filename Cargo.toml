@@ -2,7 +2,7 @@
 name = "miniball"
 description = "Minimum enclosing ball"
 authors = ["Rouven Spreckels <rs@qu1x.dev>"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 documentation = "https://docs.rs/miniball"
 repository = "https://github.com/qu1x/miniball"
