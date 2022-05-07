@@ -126,7 +126,7 @@ fn minimum_6_ball_enclosing_6_cube() {
 			// randomly distributed points.
 			assert!((center - offset).map(f64::abs) < Vector6::from_element(1.0).into());
 			assert!((radius - diagonal_halved).abs() < 1.0);
-			// Epsilon of numeric stability for computing circumscribed 4-ball. This is related to
+			// Epsilon of numerical stability for computing circumscribed 4-ball. This is related to
 			// robustness of `Enclosing::with_bounds()` regarding floating-point inaccuracies.
 			let epsilon = f64::EPSILON.sqrt();
 			// Ensures all points are enclosed by 4-ball.

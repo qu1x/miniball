@@ -16,6 +16,17 @@ Minimum enclosing ball.
 [Rust]: https://img.shields.io/badge/rust-nightly-orange.svg
 [License]: https://img.shields.io/crates/l/miniball
 
+**NOTE**: This crate requires nightly Rust.
+
+  * Finds circumscribed *n*-ball of set of bounds.
+  * Finds minimum *n*-ball enclosing set of points.
+
+# Roadmap
+
+  * Find minimum enclosing *n*-ball of *n*-balls.
+  * Find minimum-volume enclosing *n*-ellipsoid.
+  * Improve numerical stability and performance.
+
 See the [release history] to keep track of the development.
 
 [release history]: RELEASES.md

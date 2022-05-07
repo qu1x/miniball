@@ -13,9 +13,9 @@
 //!
 //! # Roadmap
 //!
-//!   * Implement [`Enclosing`] for `Ellipsoid` structure.
-//!   * Implement approximation algorithm as part of `ApproxEnclosing` trait.
-//!   * Implement finding minimum enclosing ball of balls.
+//!   * Find minimum enclosing *n*-ball of *n*-balls.
+//!   * Find minimum-volume enclosing *n*-ellipsoid.
+//!   * Improve numerical stability and performance.
 
 #![forbid(missing_docs)]
 #![forbid(unsafe_code)]
