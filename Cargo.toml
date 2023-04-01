@@ -2,7 +2,7 @@
 name = "miniball"
 description = "Minimum enclosing ball"
 authors = ["Rouven Spreckels <rs@qu1x.dev>"]
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 documentation = "https://docs.rs/miniball"
 repository = "https://github.com/qu1x/miniball"
@@ -32,8 +32,8 @@ include = [
 
 [dependencies]
 arrayvec = "0.7.2"
-nalgebra = { version = "0.31.0", features = ["rand"] }
-stacker = "0.1.14"
+nalgebra = { version = "0.32.2", features = ["rand"] }
+stacker = "0.1.15"
 
 [profile.test]
 opt-level = 2

@@ -22,9 +22,7 @@ impl<R: RealField, const D: usize> Enclosing<R, D> for Ball<R, D> {
 		distance_squared(&self.center, point) <= self.radius_squared
 	}
 	fn with_bounds(bounds: &[Point<R, D>]) -> Option<Self> {
-		let length = (1..=D + 1)
-			.contains(&bounds.len())
-			.then(|| bounds.len() - 1)?;
+		let length = bounds.len().checked_sub(1).filter(|&length| length <= D)?;
 		let points = SMatrix::<R, D, D>::from_fn(|row, column| {
 			if column < length {
 				bounds[column + 1].coords[row].clone() - bounds[0].coords[row].clone()
@@ -32,7 +30,7 @@ impl<R: RealField, const D: usize> Enclosing<R, D> for Ball<R, D> {
 				R::zero()
 			}
 		});
-		let points = points.slice((0, 0), (D, length));
+		let points = points.view((0, 0), (D, length));
 		let matrix = SMatrix::<R, D, D>::from_fn(|row, column| {
 			if row < length && column < length {
 				points.column(row).dot(&points.column(column)) * (R::one() + R::one())
@@ -40,7 +38,7 @@ impl<R: RealField, const D: usize> Enclosing<R, D> for Ball<R, D> {
 				R::zero()
 			}
 		});
-		let matrix = matrix.slice((0, 0), (length, length));
+		let matrix = matrix.view((0, 0), (length, length));
 		let vector = SVector::<R, D>::from_fn(|row, _column| {
 			if row < length {
 				points.column(row).norm_squared()
@@ -48,7 +46,7 @@ impl<R: RealField, const D: usize> Enclosing<R, D> for Ball<R, D> {
 				R::zero()
 			}
 		});
-		let vector = vector.slice((0, 0), (length, 1));
+		let vector = vector.view((0, 0), (length, 1));
 		matrix.try_inverse().map(|matrix| {
 			let vector = matrix * vector;
 			let mut center = SVector::<R, D>::zeros();
