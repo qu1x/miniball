@@ -1,4 +1,4 @@
-// Copyright © 2022 Rouven Spreckels <rs@qu1x.dev>
+// Copyright © 2022-2024 Rouven Spreckels <rs@qu1x.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,49 +32,49 @@ pub trait Deque<T> {
 impl<T> Deque<T> for VecDeque<T> {
 	#[inline]
 	fn len(&self) -> usize {
-		VecDeque::len(self)
+		Self::len(self)
 	}
 
 	#[inline]
 	fn pop_front(&mut self) -> Option<T> {
-		VecDeque::pop_front(self)
+		Self::pop_front(self)
 	}
 	#[inline]
 	fn pop_back(&mut self) -> Option<T> {
-		VecDeque::pop_back(self)
+		Self::pop_back(self)
 	}
 
 	#[inline]
 	fn push_front(&mut self, value: T) {
-		VecDeque::push_front(self, value);
+		Self::push_front(self, value);
 	}
 	#[inline]
 	fn push_back(&mut self, value: T) {
-		VecDeque::push_back(self, value);
+		Self::push_back(self, value);
 	}
 }
 
 impl<T> Deque<T> for LinkedList<T> {
 	#[inline]
 	fn len(&self) -> usize {
-		LinkedList::len(self)
+		Self::len(self)
 	}
 
 	#[inline]
 	fn pop_front(&mut self) -> Option<T> {
-		LinkedList::pop_front(self)
+		Self::pop_front(self)
 	}
 	#[inline]
 	fn pop_back(&mut self) -> Option<T> {
-		LinkedList::pop_back(self)
+		Self::pop_back(self)
 	}
 
 	#[inline]
 	fn push_front(&mut self, value: T) {
-		LinkedList::push_front(self, value);
+		Self::push_front(self, value);
 	}
 	#[inline]
 	fn push_back(&mut self, value: T) {
-		LinkedList::push_back(self, value);
+		Self::push_back(self, value);
 	}
 }

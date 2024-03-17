@@ -1,27 +1,34 @@
-// Copyright © 2022 Rouven Spreckels <rs@qu1x.dev>
+// Copyright © 2022-2024 Rouven Spreckels <rs@qu1x.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use super::Deque;
-use arrayvec::ArrayVec;
-use nalgebra::{Point, RealField};
+use super::{Deque, OVec};
+use nalgebra::{
+	base::allocator::Allocator, DefaultAllocator, DimNameAdd, DimNameSum, OPoint, RealField, U1,
+};
 use stacker::maybe_grow;
 use std::mem::size_of;
 
 /// Minimum enclosing ball.
-pub trait Enclosing<R: RealField, const D: usize>: Clone {
+pub trait Enclosing<R: RealField, D: DimNameAdd<U1>>
+where
+	Self: Clone,
+	DefaultAllocator: Allocator<R, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
+	<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+{
 	#[doc(hidden)]
 	/// Guaranteed stack size per recursion step.
-	const RED_ZONE: usize = 32 * 1_024 + (8 * D + 2 * D.pow(2)) * size_of::<Point<R, D>>();
+	const RED_ZONE: usize =
+		32 * 1_024 + (8 * D::USIZE + 2 * D::USIZE.pow(2)) * size_of::<OPoint<R, D>>();
 	#[doc(hidden)]
 	/// New stack space to allocate if within [`Self::RED_ZONE`].
 	const STACK_SIZE: usize = Self::RED_ZONE * 1_024;
 
 	/// Whether ball contains `point`.
 	#[must_use]
-	fn contains(&self, point: &Point<R, D>) -> bool;
+	fn contains(&self, point: &OPoint<R, D>) -> bool;
 	/// Returns circumscribed ball with all `bounds` on surface or `None` if it does not exist.
 	///
 	/// # Example
@@ -52,7 +59,7 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 	/// assert_eq!(radius_squared, 3.0);
 	/// ```
 	#[must_use]
-	fn with_bounds(bounds: &[Point<R, D>]) -> Option<Self>;
+	fn with_bounds(bounds: &[OPoint<R, D>]) -> Option<Self>;
 
 	/// Returns minimum ball enclosing `points`.
 	///
@@ -123,13 +130,13 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 	/// ```
 	#[must_use]
 	#[inline]
-	fn enclosing_points(points: &mut impl Deque<Point<R, D>>) -> Self
-	where
-		ArrayVec<Point<R, D>, { D + 1 }>:,
-	{
+	fn enclosing_points(points: &mut impl Deque<OPoint<R, D>>) -> Self {
 		maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
-			Self::enclosing_points_with_bounds(points, &mut ArrayVec::new())
-				.expect("Empty point set")
+			Self::enclosing_points_with_bounds(
+				points,
+				&mut OVec::<OPoint<R, D>, DimNameSum<D, U1>>::new(),
+			)
+			.expect("Empty point set")
 		})
 	}
 	/// Returns minimum ball enclosing `points` with `bounds`.
@@ -138,20 +145,16 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 	#[doc(hidden)]
 	#[must_use]
 	fn enclosing_points_with_bounds(
-		points: &mut impl Deque<Point<R, D>>,
-		bounds: &mut ArrayVec<Point<R, D>, { D + 1 }>,
+		points: &mut impl Deque<OPoint<R, D>>,
+		bounds: &mut OVec<OPoint<R, D>, DimNameSum<D, U1>>,
 	) -> Option<Self> {
 		// Take point from back.
-		if let Some(point) = points.pop_back()
-			&& !bounds.is_full()
-		{
+		if let Some(point) = points.pop_back().filter(|_| !bounds.is_full()) {
 			let ball = maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
 				// Branch with one point less.
 				Self::enclosing_points_with_bounds(points, bounds)
 			});
-			if let Some(ball) = ball
-				&& ball.contains(&point)
-			{
+			if let Some(ball) = ball.filter(|ball| ball.contains(&point)) {
 				// Move point to back.
 				points.push_back(point);
 				Some(ball)
@@ -168,7 +171,7 @@ pub trait Enclosing<R: RealField, const D: usize>: Clone {
 			}
 		} else {
 			// Circumscribed ball with bounds.
-			Self::with_bounds(bounds)
+			Self::with_bounds(bounds.as_slice())
 		}
 	}
 }

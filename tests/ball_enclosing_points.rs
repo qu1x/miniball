@@ -10,7 +10,7 @@ use miniball::{Ball, Enclosing};
 use nalgebra::{
 	distance, Point, Point1, Point2, Point3, Point6, Vector1, Vector2, Vector3, Vector6,
 };
-use std::collections::VecDeque;
+use std::{collections::VecDeque, iter::once};
 
 #[test]
 fn minimum_0_ball_enclosing_bounds() {
@@ -18,7 +18,7 @@ fn minimum_0_ball_enclosing_bounds() {
 	let Ball {
 		center,
 		radius_squared,
-	} = Ball::enclosing_points(&mut [a].into_iter().collect::<VecDeque<_>>());
+	} = Ball::enclosing_points(&mut once(a).collect::<VecDeque<_>>());
 	assert_eq!(center, a);
 	assert_eq!(radius_squared, 0.0);
 }

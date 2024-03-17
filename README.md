@@ -6,17 +6,15 @@ Minimum enclosing ball.
 [![Documentation][]](https://docs.rs/miniball)
 [![Downloads][]](https://crates.io/crates/miniball)
 [![Version][]](https://crates.io/crates/miniball)
-[![Rust][]](https://www.rust-lang.org)
+[![Rust][]](https://blog.rust-lang.org/2022/05/19/Rust-1.61.0.html)
 [![License][]](https://mozilla.org/MPL)
 
 [Build]: https://github.com/qu1x/miniball/actions/workflows/build.yml/badge.svg
 [Documentation]: https://docs.rs/miniball/badge.svg
 [Downloads]: https://img.shields.io/crates/d/miniball.svg
 [Version]: https://img.shields.io/crates/v/miniball.svg
-[Rust]: https://img.shields.io/badge/rust-nightly-orange.svg
+[Rust]: https://img.shields.io/badge/rust-v1.61.0-brightgreen.svg
 [License]: https://img.shields.io/crates/l/miniball
-
-**NOTE**: This crate requires nightly Rust.
 
   * Finds circumscribed *n*-ball of set of bounds.
   * Finds minimum *n*-ball enclosing set of points.
@@ -33,7 +31,7 @@ See the [release history] to keep track of the development.
 
 ## License
 
-Copyright © 2022 Rouven Spreckels <rs@qu1x.dev>
+Copyright © 2022-2024 Rouven Spreckels <rs@qu1x.dev>
 
 Licensed under the terms of the [`MPL-2.0`](LICENSES/MPL-2.0).
 

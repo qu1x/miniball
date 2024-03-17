@@ -7,11 +7,11 @@
 #![allow(clippy::float_cmp)]
 
 use miniball::{Ball, Enclosing};
-use nalgebra::{center, Point, Point1, Point2, Point3, Vector1, Vector2, Vector3};
+use nalgebra::{center, Point, Point1, Point2, Point3, Vector1, Vector2, Vector3, U0, U1, U2, U3};
 
 #[test]
 fn circumscribed_0_ball_with_0_bounds() {
-	let ball = Ball::<f64, 0>::with_bounds(&[]);
+	let ball = Ball::<f64, U0>::with_bounds(&[]);
 	assert_eq!(ball, None);
 }
 
@@ -36,7 +36,7 @@ fn circumscribed_0_ball_with_2_bounds() {
 
 #[test]
 fn circumscribed_1_ball_with_0_bounds() {
-	let ball = Ball::<f64, 1>::with_bounds(&[]);
+	let ball = Ball::<f64, U1>::with_bounds(&[]);
 	assert_eq!(ball, None);
 }
 
@@ -66,7 +66,7 @@ fn circumscribed_1_ball_with_2_bounds() {
 
 #[test]
 fn circumscribed_2_ball_with_0_bounds() {
-	let ball = Ball::<f64, 2>::with_bounds(&[]);
+	let ball = Ball::<f64, U2>::with_bounds(&[]);
 	assert_eq!(ball, None);
 }
 
@@ -129,7 +129,7 @@ fn circumscribed_2_ball_with_3_points() {
 
 #[test]
 fn circumscribed_3_ball_with_0_bounds() {
-	let ball = Ball::<f64, 3>::with_bounds(&[]);
+	let ball = Ball::<f64, U3>::with_bounds(&[]);
 	assert_eq!(ball, None);
 }
 

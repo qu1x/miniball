@@ -1,9 +1,8 @@
 name: build
 on:
-  schedule:
-  - cron: '0 5 * * *'
-  push:
+  merge_group:
   pull_request:
+  push:
 env:
   CARGO_TERM_COLOR: always
 jobs:
@@ -11,29 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+    - name: msrv
+      run: |
+        msrv=$(cargo metadata --no-deps --format-version 1 |
+          jq --raw-output '.packages[] | select(.name=="miniball") | .rust_version')
+        echo "MSRV=$msrv" >> $GITHUB_ENV
     - name: toolchain
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
-        toolchain: nightly
-        profile: minimal
+        toolchain: ${{ env.MSRV }}
         components: rustfmt, rust-docs, clippy
-        override: true
     - name: test
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
+      run: cargo test
     - name: clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --tests -- --deny clippy::pedantic
+      run: cargo clippy --tests --examples -- -D clippy::all -D clippy::pedantic -D clippy::nursery
     - name: doc
-      uses: actions-rs/cargo@v1
-      with:
-        command: doc
+      run: cargo doc
     - name: fmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --check
+      run: cargo fmt --check
