@@ -1,6 +1,10 @@
+# Version 0.3.1 (2024-03-22)
+
+  * Lower trait bounds on `Ball` and `Enclosing`.
+
 # Version 0.3.0 (2024-03-17)
 
-  * Replace `Point` with `OPoint` supporting static as well as dynamic dimensions.
+  * Replace `Point` with `OPoint` supporting arithmetic at compile-time.
   * Replace `ArrayVec<T, { D + 1 }>` with `OVec<T, DimNameSum<D, U1>>` supporting stabe Rust.
 
 # Version 0.2.0 (2023-04-01)

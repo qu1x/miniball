@@ -61,7 +61,6 @@ where
 	/// Panics if [`Self::is_full()`].
 	#[inline]
 	pub fn push(&mut self, item: T) {
-		assert!(!self.is_full());
 		self.data[self.size] = item;
 		self.size += 1;
 	}

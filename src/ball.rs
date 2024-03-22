@@ -6,13 +6,12 @@
 
 use super::Enclosing;
 use nalgebra::{
-	base::allocator::Allocator, DefaultAllocator, DimNameAdd, DimNameSum, OMatrix, OPoint, OVector,
-	RealField, U1,
+	base::allocator::Allocator, DefaultAllocator, DimName, OMatrix, OPoint, OVector, RealField,
 };
 
 /// Ball over real field `R` of dimension `D` with center and radius squared.
 #[derive(Debug, Clone, PartialEq)]
-pub struct Ball<R: RealField, D: DimNameAdd<U1>>
+pub struct Ball<R: RealField, D: DimName>
 where
 	DefaultAllocator: Allocator<R, D>,
 {
@@ -22,24 +21,25 @@ where
 	pub radius_squared: R,
 }
 
-impl<R: RealField + Copy, D: DimNameAdd<U1>> Copy for Ball<R, D>
+impl<R: RealField + Copy, D: DimName> Copy for Ball<R, D>
 where
 	OPoint<R, D>: Copy,
 	DefaultAllocator: Allocator<R, D>,
 {
 }
 
-impl<R: RealField, D: DimNameAdd<U1>> Enclosing<R, D> for Ball<R, D>
+impl<R: RealField, D: DimName> Enclosing<R, D> for Ball<R, D>
 where
-	DefaultAllocator:
-		Allocator<R, D> + Allocator<R, D, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
-	<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+	DefaultAllocator: Allocator<R, D>,
 {
 	#[inline]
 	fn contains(&self, point: &OPoint<R, D>) -> bool {
 		(point - &self.center).norm_squared() <= self.radius_squared
 	}
-	fn with_bounds(bounds: &[OPoint<R, D>]) -> Option<Self> {
+	fn with_bounds(bounds: &[OPoint<R, D>]) -> Option<Self>
+	where
+		DefaultAllocator: Allocator<R, D, D>,
+	{
 		let length = bounds.len().checked_sub(1).filter(|&len| len <= D::USIZE)?;
 		let points = OMatrix::<R, D, D>::from_fn(|row, column| {
 			if column < length {

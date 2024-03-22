@@ -6,17 +6,17 @@
 
 use super::{Deque, OVec};
 use nalgebra::{
-	base::allocator::Allocator, DefaultAllocator, DimNameAdd, DimNameSum, OPoint, RealField, U1,
+	base::allocator::Allocator, DefaultAllocator, DimName, DimNameAdd, DimNameSum, OPoint,
+	RealField, U1,
 };
 use stacker::maybe_grow;
 use std::mem::size_of;
 
 /// Minimum enclosing ball.
-pub trait Enclosing<R: RealField, D: DimNameAdd<U1>>
+pub trait Enclosing<R: RealField, D: DimName>
 where
 	Self: Clone,
-	DefaultAllocator: Allocator<R, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
-	<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+	DefaultAllocator: Allocator<R, D>,
 {
 	#[doc(hidden)]
 	/// Guaranteed stack size per recursion step.
@@ -59,7 +59,9 @@ where
 	/// assert_eq!(radius_squared, 3.0);
 	/// ```
 	#[must_use]
-	fn with_bounds(bounds: &[OPoint<R, D>]) -> Option<Self>;
+	fn with_bounds(bounds: &[OPoint<R, D>]) -> Option<Self>
+	where
+		DefaultAllocator: Allocator<R, D, D>;
 
 	/// Returns minimum ball enclosing `points`.
 	///
@@ -130,7 +132,12 @@ where
 	/// ```
 	#[must_use]
 	#[inline]
-	fn enclosing_points(points: &mut impl Deque<OPoint<R, D>>) -> Self {
+	fn enclosing_points(points: &mut impl Deque<OPoint<R, D>>) -> Self
+	where
+		D: DimNameAdd<U1>,
+		DefaultAllocator: Allocator<R, D, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
+		<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+	{
 		maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
 			Self::enclosing_points_with_bounds(
 				points,
@@ -147,7 +154,12 @@ where
 	fn enclosing_points_with_bounds(
 		points: &mut impl Deque<OPoint<R, D>>,
 		bounds: &mut OVec<OPoint<R, D>, DimNameSum<D, U1>>,
-	) -> Option<Self> {
+	) -> Option<Self>
+	where
+		D: DimNameAdd<U1>,
+		DefaultAllocator: Allocator<R, D, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
+		<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+	{
 		// Take point from back.
 		if let Some(point) = points.pop_back().filter(|_| !bounds.is_full()) {
 			let ball = maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {

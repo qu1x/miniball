@@ -2,7 +2,7 @@
 name = "miniball"
 description = "Minimum enclosing ball"
 authors = ["Rouven Spreckels <rs@qu1x.dev>"]
-version = "0.3.0"
+version = "0.3.1"
 rust-version = "1.61.0"
 edition = "2021"
 documentation = "https://docs.rs/miniball"
