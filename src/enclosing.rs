@@ -13,22 +13,22 @@ use stacker::maybe_grow;
 use std::mem::size_of;
 
 /// Minimum enclosing ball.
-pub trait Enclosing<R: RealField, D: DimName>
+pub trait Enclosing<T: RealField, D: DimName>
 where
 	Self: Clone,
-	DefaultAllocator: Allocator<R, D>,
+	DefaultAllocator: Allocator<T, D>,
 {
 	#[doc(hidden)]
 	/// Guaranteed stack size per recursion step.
 	const RED_ZONE: usize =
-		32 * 1_024 + (8 * D::USIZE + 2 * D::USIZE.pow(2)) * size_of::<OPoint<R, D>>();
+		32 * 1_024 + (8 * D::USIZE + 2 * D::USIZE.pow(2)) * size_of::<OPoint<T, D>>();
 	#[doc(hidden)]
 	/// New stack space to allocate if within [`Self::RED_ZONE`].
 	const STACK_SIZE: usize = Self::RED_ZONE * 1_024;
 
 	/// Whether ball contains `point`.
 	#[must_use]
-	fn contains(&self, point: &OPoint<R, D>) -> bool;
+	fn contains(&self, point: &OPoint<T, D>) -> bool;
 	/// Returns circumscribed ball with all `bounds` on surface or `None` if it does not exist.
 	///
 	/// # Example
@@ -59,9 +59,9 @@ where
 	/// assert_eq!(radius_squared, 3.0);
 	/// ```
 	#[must_use]
-	fn with_bounds(bounds: &[OPoint<R, D>]) -> Option<Self>
+	fn with_bounds(bounds: &[OPoint<T, D>]) -> Option<Self>
 	where
-		DefaultAllocator: Allocator<R, D, D>;
+		DefaultAllocator: Allocator<T, D, D>;
 
 	/// Returns minimum ball enclosing `points`.
 	///
@@ -72,15 +72,15 @@ where
 	/// to the front and enclosed ones to the back.
 	///
 	/// Implements [Welzl's recursive algorithm] with move-to-front heuristic. No allocations happen
-	/// unless real field `R` is not [`Copy`] or stack size enters dimension-dependant red zone in
+	/// unless real field `T` is not [`Copy`] or stack size enters dimension-dependant red zone in
 	/// which case temporary stack space will be allocated.
 	///
 	/// [Welzl's recursive algorithm]: https://api.semanticscholar.org/CorpusID:17569809
 	///
 	/// # Complexity
 	///
-	/// Expected time complexity is *O(cn)* for *n* randomly permuted points. Complexity constant
-	/// *c* is significantly reduced by reusing permuted points of previous invocations.
+	/// Expected time complexity is *O*(*n*) for *n* randomly permuted points. Complexity constant
+	/// *c* as in *cn* is significantly reduced by reusing permuted points of previous invocations.
 	///
 	/// # Example
 	///
@@ -132,16 +132,16 @@ where
 	/// ```
 	#[must_use]
 	#[inline]
-	fn enclosing_points(points: &mut impl Deque<OPoint<R, D>>) -> Self
+	fn enclosing_points(points: &mut impl Deque<OPoint<T, D>>) -> Self
 	where
 		D: DimNameAdd<U1>,
-		DefaultAllocator: Allocator<R, D, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
-		<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+		DefaultAllocator: Allocator<T, D, D> + Allocator<OPoint<T, D>, DimNameSum<D, U1>>,
+		<DefaultAllocator as Allocator<OPoint<T, D>, DimNameSum<D, U1>>>::Buffer: Default,
 	{
 		maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
 			Self::enclosing_points_with_bounds(
 				points,
-				&mut OVec::<OPoint<R, D>, DimNameSum<D, U1>>::new(),
+				&mut OVec::<OPoint<T, D>, DimNameSum<D, U1>>::new(),
 			)
 			.expect("Empty point set")
 		})
@@ -152,13 +152,13 @@ where
 	#[doc(hidden)]
 	#[must_use]
 	fn enclosing_points_with_bounds(
-		points: &mut impl Deque<OPoint<R, D>>,
-		bounds: &mut OVec<OPoint<R, D>, DimNameSum<D, U1>>,
+		points: &mut impl Deque<OPoint<T, D>>,
+		bounds: &mut OVec<OPoint<T, D>, DimNameSum<D, U1>>,
 	) -> Option<Self>
 	where
 		D: DimNameAdd<U1>,
-		DefaultAllocator: Allocator<R, D, D> + Allocator<OPoint<R, D>, DimNameSum<D, U1>>,
-		<DefaultAllocator as Allocator<OPoint<R, D>, DimNameSum<D, U1>>>::Buffer: Default,
+		DefaultAllocator: Allocator<T, D, D> + Allocator<OPoint<T, D>, DimNameSum<D, U1>>,
+		<DefaultAllocator as Allocator<OPoint<T, D>, DimNameSum<D, U1>>>::Buffer: Default,
 	{
 		// Take point from back.
 		if let Some(point) = points.pop_back().filter(|_| !bounds.is_full()) {
