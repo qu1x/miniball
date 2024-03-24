@@ -45,4 +45,4 @@ jobs:
         toolchain: ${{ env.MSRV }}
         targets: thumbv6m-none-eabi
     - name: check
-      run: cargo check --no-default-features
+      run: cargo check --target thumbv6m-none-eabi --no-default-features
