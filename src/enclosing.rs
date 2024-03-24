@@ -5,12 +5,19 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use super::{Deque, OVec};
+use core::mem::size_of;
 use nalgebra::{
 	base::allocator::Allocator, DefaultAllocator, DimName, DimNameAdd, DimNameSum, OPoint,
 	RealField, U1,
 };
+#[cfg(feature = "std")]
 use stacker::maybe_grow;
-use std::mem::size_of;
+
+#[cfg(not(feature = "std"))]
+#[inline]
+fn maybe_grow<R, F: FnOnce() -> R>(_red_zone: usize, _stack_size: usize, callback: F) -> R {
+	callback()
+}
 
 /// Minimum enclosing ball.
 pub trait Enclosing<T: RealField, D: DimName>
@@ -72,15 +79,17 @@ where
 	/// to the front and enclosed ones to the back.
 	///
 	/// Implements [Welzl's recursive algorithm] with move-to-front heuristic. No allocations happen
-	/// unless real field `T` is not [`Copy`] or stack size enters dimension-dependant red zone in
-	/// which case temporary stack space will be allocated.
+	/// unless the real field `T` is not [`Copy`] or the stack size enters the dimension-dependant
+	/// red zone in which case temporary stack space will be allocated on the heap if the `std`
+	/// feature is enabled.
 	///
 	/// [Welzl's recursive algorithm]: https://api.semanticscholar.org/CorpusID:17569809
 	///
 	/// # Complexity
 	///
-	/// Expected time complexity is *O*(*n*) for *n* randomly permuted points. Complexity constant
-	/// *c* as in *cn* is significantly reduced by reusing permuted points of previous invocations.
+	/// Expected time complexity is *O*((*n*+1)(*n*+1)!*m*) for *m* randomly permuted
+	/// *n*-dimensional points. The complexity constant in *m* is significantly reduced by reusing
+	/// permuted points of previous invocations.
 	///
 	/// # Example
 	///

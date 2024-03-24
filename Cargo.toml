@@ -17,6 +17,7 @@ keywords = [
 	"welzl-algorithm",
 ]
 categories = [
+	"no-std",
 	"science",
 	"graphics",
 	"algorithms",
@@ -31,9 +32,20 @@ include = [
 	"LICENSES/*",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
 [dependencies]
+nalgebra = { version = "0.32.4", default-features = false, features = ["alloc"] }
+stacker = { version = "0.1.15", optional = true }
+
+[features]
+default = ["std"]
+std = ["dep:stacker"]
+
+[dev-dependencies]
 nalgebra = { version = "0.32.4", features = ["rand"] }
-stacker = "0.1.15"
 
 [profile.test]
 opt-level = 2

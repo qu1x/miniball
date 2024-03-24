@@ -4,6 +4,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#[cfg(feature = "std")]
 use std::collections::{LinkedList, VecDeque};
 
 /// Minimum double-ended queue interface.
@@ -29,6 +30,7 @@ pub trait Deque<T> {
 	}
 }
 
+#[cfg(feature = "std")]
 impl<T> Deque<T> for VecDeque<T> {
 	#[inline]
 	fn len(&self) -> usize {
@@ -54,6 +56,7 @@ impl<T> Deque<T> for VecDeque<T> {
 	}
 }
 
+#[cfg(feature = "std")]
 impl<T> Deque<T> for LinkedList<T> {
 	#[inline]
 	fn len(&self) -> usize {

@@ -2,6 +2,7 @@
 
   * Lower trait bounds on `Ball` and `Enclosing`.
   * Use `T` in favor of `R` as does `nalgebra`.
+  * Allow `no_std` by gating `stacker` dependency and `Deque` implementations behind `std` feature.
 
 # Version 0.3.0 (2024-03-17)
 

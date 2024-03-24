@@ -14,10 +14,17 @@
 //!   * Find minimum enclosing *n*-ball of *n*-balls.
 //!   * Find minimum-volume enclosing *n*-ellipsoid.
 //!   * Improve numerical stability and performance.
+//!
+//! # Features
+//!
+//!   * `std` for spilling recursion stack over to the heap if necessary. Enabled by `default`.
 
-#![forbid(missing_docs)]
 #![forbid(unsafe_code)]
+#![forbid(missing_docs)]
+#![forbid(rustdoc::broken_intra_doc_links)]
 #![allow(clippy::tabs_in_doc_comments)]
+#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 mod ball;
 mod deque;
