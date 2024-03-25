@@ -147,13 +147,18 @@ where
 		DefaultAllocator: Allocator<T, D, D> + Allocator<OPoint<T, D>, DimNameSum<D, U1>>,
 		<DefaultAllocator as Allocator<OPoint<T, D>, DimNameSum<D, U1>>>::Buffer: Default,
 	{
-		maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
-			Self::enclosing_points_with_bounds(
-				points,
-				&mut OVec::<OPoint<T, D>, DimNameSum<D, U1>>::new(),
-			)
-			.expect("Empty point set")
-		})
+		assert!(!points.is_empty(), "empty point set");
+		for _ in 0..points.len() {
+			if let Some(ball) = maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
+				Self::enclosing_points_with_bounds(
+					points,
+					&mut OVec::<OPoint<T, D>, DimNameSum<D, U1>>::new(),
+				)
+			}) {
+				return ball;
+			}
+		}
+		unreachable!("numerical instability");
 	}
 	/// Returns minimum ball enclosing `points` with `bounds`.
 	///

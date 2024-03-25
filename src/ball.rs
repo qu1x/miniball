@@ -34,7 +34,9 @@ where
 {
 	#[inline]
 	fn contains(&self, point: &OPoint<T, D>) -> bool {
-		(point - &self.center).norm_squared() <= self.radius_squared
+		let norm_squared = (point - &self.center).norm_squared();
+		assert!(norm_squared.is_finite());
+		norm_squared <= self.radius_squared
 	}
 	fn with_bounds(bounds: &[OPoint<T, D>]) -> Option<Self>
 	where
@@ -65,16 +67,17 @@ where
 			}
 		});
 		let vector = vector.view((0, 0), (length, 1));
-		matrix.try_inverse().map(|matrix| {
+		matrix.try_inverse().and_then(|matrix| {
 			let vector = matrix * vector;
 			let mut center = OVector::<T, D>::zeros();
 			for point in 0..length {
 				center += points.column(point) * vector[point].clone();
 			}
-			Self {
+			let radius_squared = center.norm_squared();
+			radius_squared.is_finite().then(|| Self {
 				center: &bounds[0] + &center,
-				radius_squared: center.norm_squared(),
-			}
+				radius_squared,
+			})
 		})
 	}
 }

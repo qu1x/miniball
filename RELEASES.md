@@ -1,3 +1,8 @@
+# Version 0.4.1 (2024-03-26)
+
+  * Leverage move-to-front heuristic to prevent panic due to numerical instability.
+  * Let `Enclosing::contains` panic for infinite points.
+
 # Version 0.4.0 (2024-03-24)
 
   * Lower trait bounds on `Ball` and `Enclosing`.
