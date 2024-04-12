@@ -106,7 +106,7 @@ fn minimum_3_ball_enclosing_3_line() {
 #[test]
 fn minimum_6_ball_enclosing_6_cube() {
 	for _randomize in 0..100 {
-		// Uniform distribution in 4-cube centered around `offset` with room `diagonal_halved`.
+		// Uniform distribution in 6-cube centered around `offset` with room `diagonal_halved`.
 		let offset = Vector6::new(-3.0, 7.0, 4.8, 1.2, 5.3, 7.4);
 		let diagonal_halved = 3.0;
 		let mut points = (0..10_000)
@@ -115,26 +115,26 @@ fn minimum_6_ball_enclosing_6_cube() {
 			.map(|point| point + offset)
 			.collect::<VecDeque<_>>();
 		for _reuse in 0..10 {
-			// Computes 4-ball enclosing 4-cube.
+			// Computes 6-ball enclosing 6-cube.
 			let Ball {
 				center,
 				radius_squared,
 			} = Ball::enclosing_points(&mut points);
 			let radius = radius_squared.sqrt();
-			// Ensures enclosing 4-ball is roughly centered around uniform distribution in 4-cube
+			// Ensures enclosing 6-ball is roughly centered around uniform distribution in 6-cube
 			// and radius roughly matches room diagonal halved, guaranteeing certain uniformity of
 			// randomly distributed points.
 			assert!((center - offset).map(f64::abs) < Vector6::from_element(1.0).into());
 			assert!((radius - diagonal_halved).abs() < 1.0);
-			// Epsilon of numerical stability for computing circumscribed 4-ball. This is related to
+			// Epsilon of numerical stability for computing circumscribed 6-ball. This is related to
 			// robustness of `Enclosing::with_bounds()` regarding floating-point inaccuracies.
 			let epsilon = f64::EPSILON.sqrt();
-			// Ensures all points are enclosed by 4-ball.
+			// Ensures all points are enclosed by 6-ball.
 			let all_enclosed = points
 				.iter()
 				.all(|point| distance(point, &center) <= radius + epsilon);
 			assert!(all_enclosed);
-			// Ensures at least 2 points are on surface of 4-ball, mandatory to be minimum.
+			// Ensures at least 2 points are on surface of 6-ball, mandatory to be minimum.
 			let bounds_count = points
 				.iter()
 				.map(|point| distance(point, &center))

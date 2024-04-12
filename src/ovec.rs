@@ -30,6 +30,12 @@ where
 	pub fn new() -> Self {
 		Self::default()
 	}
+	/// Maximum number of items.
+	#[must_use]
+	#[inline]
+	pub fn capacity(&self) -> usize {
+		self.data.len()
+	}
 	/// Number of items.
 	#[must_use]
 	#[inline]

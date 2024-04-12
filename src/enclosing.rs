@@ -91,6 +91,11 @@ where
 	/// *n*-dimensional points. The complexity constant in *m* is significantly reduced by reusing
 	/// permuted points of previous invocations.
 	///
+	/// # Stability
+	///
+	/// Due to floating-point inaccuracies, the returned ball might not exactly be the minimum for
+	/// degenerate (e.g., co-spherical) `points`.
+	///
 	/// # Example
 	///
 	/// Finds minimum 4-ball enclosing 4-cube (tesseract):
@@ -148,17 +153,14 @@ where
 		<DefaultAllocator as Allocator<OPoint<T, D>, DimNameSum<D, U1>>>::Buffer: Default,
 	{
 		assert!(!points.is_empty(), "empty point set");
-		for _ in 0..points.len() {
-			if let Some(ball) = maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
-				Self::enclosing_points_with_bounds(
-					points,
-					&mut OVec::<OPoint<T, D>, DimNameSum<D, U1>>::new(),
-				)
-			}) {
-				return ball;
-			}
-		}
-		unreachable!("numerical instability");
+		let mut bounds = OVec::<OPoint<T, D>, DimNameSum<D, U1>>::new();
+		(0..bounds.capacity())
+			.find_map(|_| {
+				maybe_grow(Self::RED_ZONE, Self::STACK_SIZE, || {
+					Self::enclosing_points_with_bounds(points, &mut bounds)
+				})
+			})
+			.expect("numerical instability")
 	}
 	/// Returns minimum ball enclosing `points` with `bounds`.
 	///

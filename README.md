@@ -25,6 +25,10 @@ Minimum enclosing ball.
   * Find minimum-volume enclosing *n*-ellipsoid.
   * Improve numerical stability and performance.
 
+# Features
+
+  * `std` for spilling recursion stack over to the heap if necessary. Enabled by `default`.
+
 See the [release history] to keep track of the development.
 
 [release history]: RELEASES.md

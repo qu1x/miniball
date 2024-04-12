@@ -1,5 +1,6 @@
-# Version 0.4.1 (2024-03-26)
+# Version 0.4.1 (2024-04-12)
 
+  * Attempt to improve numerical stability by enclosing approximately co-spherical points.
   * Leverage move-to-front heuristic to prevent panic due to numerical instability.
   * Let `Enclosing::contains` panic for infinite points.
 

@@ -5,12 +5,13 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use super::Enclosing;
+use core::cmp::Ordering;
 use nalgebra::{
 	base::allocator::Allocator, DefaultAllocator, DimName, OMatrix, OPoint, OVector, RealField,
 };
 
 /// Ball over real field `T` of dimension `D` with center and radius squared.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct Ball<T: RealField, D: DimName>
 where
 	DefaultAllocator: Allocator<T, D>,
@@ -28,6 +29,41 @@ where
 {
 }
 
+impl<T: RealField, D: DimName> PartialEq for Ball<T, D>
+where
+	DefaultAllocator: Allocator<T, D>,
+{
+	fn eq(&self, other: &Self) -> bool {
+		assert!(
+			self.radius_squared.is_finite() && other.radius_squared.is_finite(),
+			"infinite ball"
+		);
+		self.radius_squared == other.radius_squared
+	}
+}
+
+impl<T: RealField, D: DimName> Eq for Ball<T, D> where DefaultAllocator: Allocator<T, D> {}
+
+impl<T: RealField, D: DimName> PartialOrd for Ball<T, D>
+where
+	DefaultAllocator: Allocator<T, D>,
+{
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
+}
+
+impl<T: RealField, D: DimName> Ord for Ball<T, D>
+where
+	DefaultAllocator: Allocator<T, D>,
+{
+	fn cmp(&self, other: &Self) -> Ordering {
+		self.radius_squared
+			.partial_cmp(&other.radius_squared)
+			.expect("infinite ball")
+	}
+}
+
 impl<T: RealField, D: DimName> Enclosing<T, D> for Ball<T, D>
 where
 	DefaultAllocator: Allocator<T, D>,
@@ -35,8 +71,8 @@ where
 	#[inline]
 	fn contains(&self, point: &OPoint<T, D>) -> bool {
 		let norm_squared = (point - &self.center).norm_squared();
-		assert!(norm_squared.is_finite());
-		norm_squared <= self.radius_squared
+		assert!(norm_squared.is_finite(), "infinite point");
+		self.radius_squared.clone() / norm_squared >= T::one() - T::default_epsilon().sqrt()
 	}
 	fn with_bounds(bounds: &[OPoint<T, D>]) -> Option<Self>
 	where
@@ -74,8 +110,9 @@ where
 				center += points.column(point) * vector[point].clone();
 			}
 			let radius_squared = center.norm_squared();
+			let center = &bounds[0] + &center;
 			radius_squared.is_finite().then(|| Self {
-				center: &bounds[0] + &center,
+				center,
 				radius_squared,
 			})
 		})

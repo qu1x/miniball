@@ -2,7 +2,7 @@
 name = "miniball"
 description = "Minimum enclosing ball"
 authors = ["Rouven Spreckels <rs@qu1x.dev>"]
-version = "0.4.0"
+version = "0.4.1"
 rust-version = "1.61.0"
 edition = "2021"
 documentation = "https://docs.rs/miniball"
@@ -37,7 +37,7 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
-nalgebra = { version = "0.32.4", default-features = false, features = ["alloc"] }
+nalgebra = { version = "0.32.5", default-features = false, features = ["alloc"] }
 stacker = { version = "0.1.15", optional = true }
 
 [features]
@@ -45,7 +45,9 @@ default = ["std"]
 std = ["dep:stacker"]
 
 [dev-dependencies]
-nalgebra = { version = "0.32.4", features = ["rand"] }
+nalgebra = { version = "0.32.5", features = ["alloc", "rand"] }
+rand_distr = { version = "0.4.3", default-features = false }
+rand = { version = "0.8.5", default-features = false }
 
 [profile.test]
 opt-level = 2
