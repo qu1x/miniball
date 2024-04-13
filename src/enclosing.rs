@@ -94,7 +94,9 @@ where
 	/// # Stability
 	///
 	/// Due to floating-point inaccuracies, the returned ball might not exactly be the minimum for
-	/// degenerate (e.g., co-spherical) `points`.
+	/// degenerate (e.g., co-spherical) `points`. The accuracy is depending on the shape and order
+	/// of `points` with an expected worst-case factor of `T::one() ± T::default_epsilon().sqrt()`
+	/// where `T::one()` is exact.
 	///
 	/// # Example
 	///
