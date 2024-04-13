@@ -34,14 +34,14 @@ fn main() {
 		.map(|point| point * outer_radius + center)
 		.collect::<Vec<_>>();
 	let mut inner_then_outer = VecDeque::new();
-	inner_then_outer.extend(inner.iter().cloned());
-	inner_then_outer.extend(outer.iter().cloned());
+	inner_then_outer.extend(inner.iter().copied());
+	inner_then_outer.extend(outer.iter().copied());
 	let mut outer_then_inner = VecDeque::new();
-	outer_then_inner.extend(outer.iter().cloned());
-	outer_then_inner.extend(inner.iter().cloned());
+	outer_then_inner.extend(outer.iter().copied());
+	outer_then_inner.extend(inner.iter().copied());
 	let mut random = Vec::new();
-	random.extend(inner.iter().cloned());
-	random.extend(outer.iter().cloned());
+	random.extend(inner.iter().copied());
+	random.extend(outer.iter().copied());
 	random.shuffle(&mut rng);
 	let mut random = VecDeque::from(random);
 
