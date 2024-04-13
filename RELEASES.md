@@ -1,4 +1,4 @@
-# Version 0.4.1 (2024-04-12)
+# Version 0.5.0 (2024-04-13)
 
   * Attempt to improve numerical stability by enclosing approximately co-spherical points.
   * Leverage move-to-front heuristic to prevent panic due to numerical instability.
